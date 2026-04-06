@@ -55,7 +55,7 @@ export function SearchFilters({
         <Select
           value={filters.credit ?? "all"}
           onValueChange={(v) =>
-            onFiltersChange({ ...filters, credit: v === "all" ? undefined : v })
+            onFiltersChange({ ...filters, credit: !v || v === "all" ? undefined : v })
           }
         >
           <SelectTrigger
