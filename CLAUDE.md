@@ -30,6 +30,12 @@ Next.js 16.2.2 (App Router) | TypeScript 5 (strict) | Tailwind CSS v4 | shadcn/u
 - Always make sure to use existing components and enhance it for expandable like SOLID principle.
 - Always make sure to use alt tags and other accesibility tags not just in images but all relavant fields
 
+## Workflow
+
+- Implement one task at a time from `docs/tasks.md`
+- After each task: review the changes, then commit before moving to the next task
+- Never batch multiple tasks into a single commit
+
 ## Commands
 
 ```bash
