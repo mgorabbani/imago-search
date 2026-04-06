@@ -105,7 +105,7 @@ export function SearchPage() {
 
         {isLoading && !results ? (
           <SearchLoading />
-        ) : results && results.items.length > 0 ? (
+        ) : error && !results ? null : results && results.items.length > 0 ? (
           <>
             <SearchResults items={results.items} />
             <SearchPagination

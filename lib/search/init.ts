@@ -14,6 +14,10 @@ export function ensureInitialized(): Promise<void> {
       const items = JSON.parse(raw) as RawMediaItem[];
       initializeEngine(items);
     })();
+    // Clear cached promise on failure so the next request retries
+    initPromise.catch(() => {
+      initPromise = null;
+    });
   }
   return initPromise;
 }
