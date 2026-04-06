@@ -25,7 +25,7 @@ export function SearchBar({ query, onQueryChange, isLoading, totalResults }: Sea
         placeholder="Search media items..."
         aria-label="Search media items"
         className={cn(
-          "h-11 pl-9 pr-40 text-base",
+          "h-11 pl-9 pr-40 text-base [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden",
           isLoading && "border-ring/50",
         )}
       />
