@@ -28,6 +28,7 @@ Next.js 16.2.2 (App Router) | TypeScript 5 (strict) | Tailwind CSS v4 | shadcn/u
 - Use `next/image`, `next/font`, `loading.tsx`, `error.tsx`
 - Prefer Server Actions over API routes for mutations
 - Always make sure to use existing components and enhance it for expandable like SOLID principle.
+- Always make sure to use alt tags and other accesibility tags not just in images but all relavant fields
 
 ## Commands
 
