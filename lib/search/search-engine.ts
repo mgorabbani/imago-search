@@ -154,9 +154,17 @@ function applySorting(scored: ScoredItem[], request: SearchRequest): ScoredItem[
   );
 }
 
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
 function buildSnippet(suchtext: string, queryTokens: string[]): string {
   if (queryTokens.length === 0) {
-    return suchtext.slice(0, 200);
+    return escapeHtml(suchtext.slice(0, 200));
   }
 
   // Find first match position
@@ -175,6 +183,8 @@ function buildSnippet(suchtext: string, queryTokens: string[]): string {
     window = suchtext.slice(0, 200);
   }
 
-  // Wrap matches in <mark> tags
-  return window.replace(new RegExp(pattern, "gi"), (m) => `<mark>${m}</mark>`);
+  // HTML-escape first, then wrap matches in <mark> tags.
+  // Safe because query tokens are alphanumeric and unaffected by HTML escaping.
+  const escaped = escapeHtml(window);
+  return escaped.replace(new RegExp(pattern, "gi"), (m) => `<mark>${m}</mark>`);
 }
