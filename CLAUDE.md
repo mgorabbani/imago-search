@@ -39,8 +39,8 @@ Next.js 16.2.2 (App Router) | TypeScript 5 (strict) | Tailwind CSS v4 | shadcn/u
 ## Commands
 
 ```bash
-bun dev                             # Dev server
-bun run build                       # Build
-bun lint                            # Lint
-bunx shadcn@latest add <component>  # Add shadcn component
+pnpm dev                             # Dev server
+pnpm build                           # Build
+pnpm lint                            # Lint
+pnpx shadcn@latest add <component>   # Add shadcn component
 ```

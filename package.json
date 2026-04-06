@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "generate-data": "bun scripts/generate-data.ts",
+    "generate-data": "tsx scripts/generate-data.ts",
     "test": "vitest run",
     "test:e2e": "playwright test"
   },
@@ -32,6 +32,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.2",
     "tailwindcss": "^4",
+    "tsx": "^4.21.0",
     "typescript": "^5",
     "vitest": "^4.1.2"
   },
