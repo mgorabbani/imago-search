@@ -25,7 +25,6 @@ export function SearchPage() {
     setFilters,
     sortOrder,
     setSortOrder,
-    page,
     setPage,
     results,
     filterOptions,

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useDebounce } from "./use-debounce";
 import type { SearchResponse, FilterOptions } from "@/lib/types";
 
@@ -11,6 +11,25 @@ interface SearchFilters {
   restriction?: string;
 }
 
+/**
+ * Tracks in-flight fetch count to derive loading state without
+ * calling setState synchronously inside an effect body.
+ */
+function createLoadingStore() {
+  let count = 0;
+  const listeners = new Set<() => void>();
+  const notify = () => listeners.forEach((l) => l());
+  return {
+    start() { count++; notify(); },
+    stop() { count = Math.max(0, count - 1); notify(); },
+    subscribe(listener: () => void) {
+      listeners.add(listener);
+      return () => { listeners.delete(listener); };
+    },
+    getSnapshot() { return count > 0; },
+  };
+}
+
 export function useSearch() {
   const [query, setQueryState] = useState("");
   const [filters, setFiltersState] = useState<SearchFilters>({});
@@ -18,11 +37,16 @@ export function useSearch() {
   const [page, setPageState] = useState(1);
   const [results, setResults] = useState<SearchResponse | null>(null);
   const [filterOptions, setFilterOptions] = useState<FilterOptions | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const debouncedQuery = useDebounce(query, 300);
   const abortRef = useRef<AbortController | null>(null);
+  const [loadingStore] = useState(createLoadingStore);
+  const isLoading = useSyncExternalStore(
+    loadingStore.subscribe,
+    loadingStore.getSnapshot,
+    loadingStore.getSnapshot,
+  );
 
   const setQuery = useCallback((q: string) => {
     setQueryState(q);
@@ -75,8 +99,7 @@ export function useSearch() {
       params.set("sortOrder", sortOrder);
     }
 
-    setIsLoading(true);
-    setError(null);
+    loadingStore.start();
 
     fetch(`/api/search?${params.toString()}`, { signal: controller.signal })
       .then((res) => {
@@ -85,16 +108,20 @@ export function useSearch() {
       })
       .then((data: SearchResponse) => {
         setResults(data);
-        setIsLoading(false);
+        setError(null);
+        loadingStore.stop();
       })
       .catch((err: unknown) => {
-        if (err instanceof Error && err.name === "AbortError") return;
+        if (err instanceof Error && err.name === "AbortError") {
+          loadingStore.stop();
+          return;
+        }
         setError(err instanceof Error ? err.message : "Search failed");
-        setIsLoading(false);
+        loadingStore.stop();
       });
 
     return () => controller.abort();
-  }, [debouncedQuery, page, filters, sortOrder]);
+  }, [debouncedQuery, page, filters, sortOrder, loadingStore]);
 
   return {
     query,
