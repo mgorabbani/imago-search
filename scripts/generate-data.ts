@@ -192,7 +192,7 @@ function generateItem(index: number): RawMediaItem {
 }
 
 // Load seed items
-const seedPath = path.join(import.meta.dirname, "..", "data", "seed-media.json");
+const seedPath = path.join(process.cwd(), "data", "seed-media.json");
 const seedItems: RawMediaItem[] = JSON.parse(readFileSync(seedPath, "utf-8"));
 
 // Generate 10,000 items (seed items + generated)
@@ -201,6 +201,6 @@ for (let i = 0; i < 10000 - seedItems.length; i++) {
   items.push(generateItem(i));
 }
 
-const outPath = path.join(import.meta.dirname, "..", "data", "media-items.json");
+const outPath = path.join(process.cwd(), "data", "media-items.json");
 writeFileSync(outPath, JSON.stringify(items, null, 2));
 console.log(`Generated ${items.length} media items → ${outPath}`);
