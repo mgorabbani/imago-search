@@ -11,6 +11,7 @@ import {
   useState,
   useSyncExternalStore,
 } from "react";
+import { useSearchParams } from "next/navigation";
 import { useDebounce } from "./use-debounce";
 import type { SearchResponse, FilterOptions } from "@/lib/types";
 
@@ -51,10 +52,24 @@ function createLoadingStore() {
 }
 
 export function useSearch() {
-  const [query, setQueryState] = useState("");
-  const [filters, setFiltersState] = useState<SearchFilters>({});
-  const [sortOrder, setSortOrderState] = useState<"asc" | "desc" | undefined>();
-  const [page, setPageState] = useState(1);
+  const searchParams = useSearchParams();
+
+  const [query, setQueryState] = useState(() => searchParams.get("q") ?? "");
+  const [filters, setFiltersState] = useState<SearchFilters>(() => ({
+    credit: searchParams.get("credit") ?? undefined,
+    dateFrom: searchParams.get("dateFrom") ?? undefined,
+    dateTo: searchParams.get("dateTo") ?? undefined,
+    restriction: searchParams.get("restriction") ?? undefined,
+  }));
+  const [sortOrder, setSortOrderState] = useState<"asc" | "desc" | undefined>(
+    () => {
+      const s = searchParams.get("sort");
+      return s === "asc" || s === "desc" ? s : undefined;
+    },
+  );
+  const [page, setPageState] = useState(
+    () => Number(searchParams.get("page")) || 1,
+  );
   const [results, setResults] = useState<SearchResponse | null>(null);
   const [filterOptions, setFilterOptions] = useState<FilterOptions | null>(
     null,
@@ -144,6 +159,22 @@ export function useSearch() {
 
     return () => controller.abort();
   }, [debouncedQuery, page, filters, sortOrder, loadingStore]);
+
+  // Sync state → URL (uses debounced query so URL doesn't thrash while typing)
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (debouncedQuery) params.set("q", debouncedQuery);
+    if (page > 1) params.set("page", String(page));
+    if (filters.credit) params.set("credit", filters.credit);
+    if (filters.dateFrom) params.set("dateFrom", filters.dateFrom);
+    if (filters.dateTo) params.set("dateTo", filters.dateTo);
+    if (filters.restriction) params.set("restriction", filters.restriction);
+    if (sortOrder) params.set("sort", sortOrder);
+
+    const qs = params.toString();
+    const url = qs ? `?${qs}` : window.location.pathname;
+    window.history.replaceState(null, "", url);
+  }, [debouncedQuery, page, filters, sortOrder]);
 
   return {
     query,

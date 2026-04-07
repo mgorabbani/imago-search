@@ -1,4 +1,6 @@
+import { Suspense } from "react";
 import { SearchPage } from "@/components/search/search-page";
+import { SearchLoading } from "@/components/search/search-loading";
 
 export default function Home() {
   return (
@@ -9,7 +11,9 @@ export default function Home() {
           Search across 10,000+ media items
         </p>
       </header>
-      <SearchPage />
+      <Suspense fallback={<SearchLoading />}>
+        <SearchPage />
+      </Suspense>
     </main>
   );
 }
