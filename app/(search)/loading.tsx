@@ -1,4 +1,4 @@
-import { SearchLoading } from "@/components/search-loading";
+import { SearchLoading } from "@/components/search/search-loading";
 
 export default function Loading() {
   return (

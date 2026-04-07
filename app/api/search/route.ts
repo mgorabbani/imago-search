@@ -4,8 +4,6 @@ import { search } from "@/lib/search/search-engine";
 import { recordSearch } from "@/lib/analytics";
 import type { SearchRequest } from "@/lib/types";
 
-export const dynamic = "force-dynamic";
-
 export async function GET(request: NextRequest): Promise<Response> {
   try {
     await ensureInitialized();

@@ -1,6 +1,16 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+// In production, I might use TanStack Query (React Query) or SWR for
+// built-in caching, deduplication, retry, and stale-while-revalidate from client side.
+// Custom implementation here to demonstrate abort handling and React 19 patterns.
+
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import { useDebounce } from "./use-debounce";
 import type { SearchResponse, FilterOptions } from "@/lib/types";
 
@@ -20,13 +30,23 @@ function createLoadingStore() {
   const listeners = new Set<() => void>();
   const notify = () => listeners.forEach((l) => l());
   return {
-    start() { count++; notify(); },
-    stop() { count = Math.max(0, count - 1); notify(); },
+    start() {
+      count++;
+      notify();
+    },
+    stop() {
+      count = Math.max(0, count - 1);
+      notify();
+    },
     subscribe(listener: () => void) {
       listeners.add(listener);
-      return () => { listeners.delete(listener); };
+      return () => {
+        listeners.delete(listener);
+      };
     },
-    getSnapshot() { return count > 0; },
+    getSnapshot() {
+      return count > 0;
+    },
   };
 }
 
@@ -36,7 +56,9 @@ export function useSearch() {
   const [sortOrder, setSortOrderState] = useState<"asc" | "desc" | undefined>();
   const [page, setPageState] = useState(1);
   const [results, setResults] = useState<SearchResponse | null>(null);
-  const [filterOptions, setFilterOptions] = useState<FilterOptions | null>(null);
+  const [filterOptions, setFilterOptions] = useState<FilterOptions | null>(
+    null,
+  );
   const [error, setError] = useState<string | null>(null);
 
   const debouncedQuery = useDebounce(query, 300);

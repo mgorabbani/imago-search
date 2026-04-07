@@ -6,7 +6,6 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { formatRestriction } from "@/lib/format-restriction";
@@ -105,7 +104,9 @@ export function SearchFilters({
             className="w-full"
             aria-label="Filter by photographer"
           >
-            <SelectValue placeholder="All photographers" />
+            <span className="flex flex-1 text-left truncate">
+              {filters.credit ?? "All photographers"}
+            </span>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All photographers</SelectItem>
